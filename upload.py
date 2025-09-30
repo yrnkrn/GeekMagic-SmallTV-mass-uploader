@@ -7,9 +7,7 @@ import requests
 
 # -------- CONFIG --------
 BASE_URL     = "http://192.168.0.117/doUpload?dir=/image/"
-REFERER_PAGE = "http://192.168.0.117/image.html"
 GIF_DIR      = Path("upload_gifs")   # relative to this script
-FILE_FIELD   = "update"              # form field name
 
 session = requests.Session()
 
@@ -18,7 +16,7 @@ def upload_one(path: Path):
     if not ctype:
         ctype = "application/octet-stream"
     with path.open("rb") as f:
-        files = {FILE_FIELD: (path.name, f, ctype)}
+        files = {"update": (path.name, f, ctype)}
         r = session.post(BASE_URL, files=files, timeout=60)
     ok = (r.status_code in (200, 201, 204)) or r.ok
     print(("OK  " if ok else "FAIL"), path.name, "-", r.status_code)
