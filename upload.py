@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # Bulk uploader for GeekMagic SmallTV Pro via HTTP
 # Supports both GIF and JPG/JPEG files
-# Prints progress as 0001/0693 ...
 
-import sys, mimetypes
+import sys
 from pathlib import Path
 import requests
 
@@ -14,12 +13,9 @@ UPLOAD_DIR = Path("upload")   # relative to this script
 session = requests.Session()
 
 def upload_one(path: Path):
-    ctype, _ = mimetypes.guess_type(path.name)
-    if not ctype:
-        ctype = "application/octet-stream"
     with path.open("rb") as f:
-        files = {"update": (path.name, f, ctype)}
-        r = session.post(BASE_URL, files=files, timeout=60)
+        files = {"update": (path.name, f)}
+        r = session.post(BASE_URL, files=files, timeout=60, stream=True)
     ok = (r.status_code in (200, 201, 204)) or r.ok
     return ok, r.status_code
 
