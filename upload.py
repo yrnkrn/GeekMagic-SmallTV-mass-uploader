@@ -15,11 +15,9 @@ session = requests.Session()
 def upload_one(path: Path):
     with path.open("rb") as f:
         files = {"update": (path.name, f)}
-        r = session.post(BASE_URL, files=files, timeout=180, stream=True)
-        last_status = r.status_code
-        r.close()  # don't read the body when streaming
-    ok = (last_status in (200, 201, 204)) or r.ok
-    return ok, last_status
+        r = session.post(BASE_URL, files=files, timeout=30)
+    ok = (r.status_code in (200, 201, 204)) or r.ok
+    return ok, r.status_code
 
 def main():
     files = list(UPLOAD_DIR.glob("*.gif")) + \
