@@ -8,16 +8,9 @@ import requests
 
 # -------- CONFIG --------
 BASE_URL   = "http://192.168.0.117/doUpload?dir=/image/"
-UPLOAD_DIR = Path("upload")   # relative to this script
+UPLOAD_DIR = Path("upload")
 
 session = requests.Session()
-
-def upload_one(path: Path):
-    with path.open("rb") as f:
-        files = {"update": (path.name, f)}
-        r = session.post(BASE_URL, files=files, timeout=30)
-    ok = (r.status_code in (200, 201, 204)) or r.ok
-    return ok, r.status_code
 
 def main():
     files = list(UPLOAD_DIR.glob("*.gif")) + \
@@ -33,9 +26,17 @@ def main():
 
     print(f"Uploading {total} file(s) to {BASE_URL}")
     for idx, p in enumerate(files, start=1):
-        ok, status = upload_one(p)
+        with p.open("rb") as f:
+            files_dict = {"update": (p.name, f)}
+            r = session.post(BASE_URL, files=files_dict, timeout=30)
+        ok = (r.status_code in (200, 201, 204)) or r.ok
+
         prefix = f"{idx:0{width}}/{total:0{width}}"
-        print(f"{prefix} {'OK  ' if ok else 'FAIL'} {p.name} - {status}")
+        if ok:
+            print(f"{prefix} OK   {p.name} - {r.status_code}")
+        else:
+            print(f"{prefix} FAIL {p.name} - {r.status_code}")
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()
