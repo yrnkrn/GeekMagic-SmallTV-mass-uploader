@@ -22,7 +22,6 @@ def upload_one(path: Path):
     return ok, last_status
 
 def main():
-    # Collect GIF, JPG, JPEG (no sorting)
     files = list(UPLOAD_DIR.glob("*.gif")) + \
             list(UPLOAD_DIR.glob("*.jpg")) + \
             list(UPLOAD_DIR.glob("*.jpeg"))
@@ -32,7 +31,7 @@ def main():
         sys.exit(1)
 
     total = len(files)
-    width = len(str(total))  # padding width (e.g. 4 for 1000 files)
+    width = len(str(total))
 
     print(f"Uploading {total} file(s) to {BASE_URL}")
     for idx, p in enumerate(files, start=1):
